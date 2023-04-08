@@ -1,12 +1,13 @@
+"""Test GFS functions."""
 from datetime import datetime, timezone
 
 import pytest
 
-from open_wx_data.gfs import build_s3_prefix, calc_latest_possible_run
+from open_wx_data.gfs import build_s3_grib_file_prefix, calc_latest_possible_run
 
 
 @pytest.mark.parametrize(
-    "model_run,expected",
+    ("model_run", "expected"),
     [
         (
             datetime(year=2021, month=1, day=1, hour=0, tzinfo=timezone.utc),
@@ -18,8 +19,9 @@ from open_wx_data.gfs import build_s3_prefix, calc_latest_possible_run
         ),
     ],
 )
-def test_build_s3_prefix(model_run, expected):
-    assert build_s3_prefix(model_run) == expected
+def test_build_s3_prefix(model_run: datetime, expected: str) -> None:
+    """Test build_s3_grib_file_prefix."""
+    assert build_s3_grib_file_prefix(model_run) == expected
 
 
 @pytest.mark.parametrize(
