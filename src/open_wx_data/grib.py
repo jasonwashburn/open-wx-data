@@ -1,16 +1,28 @@
+"""Functions for working with grib files."""
 from collections import defaultdict
 
 
 def parse_idx(idx: str) -> dict:
-    # idx format: 1:0:d=2023040812:PRMSL:mean sea level:anl:
+    """Parse a GRIB idx file into a dict.
 
-    idx_dict = defaultdict(lambda: defaultdict(dict))
+    Grib .idx files are used map individual GRIB messages to specific byte
+    ranges in the GRIB file.
+
+    Example format:
+    1:0:d=2023040812:PRMSL:mean sea level:anl:
+    2:1005022:d=2023040812:CLMR:1 hybrid level:anl:
+    3:1115513:d=2023040812:ICMR:1 hybrid level:anl:
+
+    Args:
+        idx (str): The idx file contents.
+
+    Returns:
+        dict: The parsed idx file as a dict.
+    """
+    idx_dict: defaultdict[str, defaultdict] = defaultdict(lambda: defaultdict(dict))
     prev_start_byte = None
     for line in reversed(idx.splitlines()):
         _, start_byte, _, param, level, _ = line.rstrip(":").split(":")
-        start_byte = int(start_byte)
-        idx_dict[param][level]["byte_range"] = (start_byte, prev_start_byte)
-        prev_start_byte = start_byte
+        idx_dict[param][level]["byte_range"] = (int(start_byte), prev_start_byte)
+        prev_start_byte = int(start_byte)
     return idx_dict
-
-
